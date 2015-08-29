@@ -45,22 +45,42 @@ Write-Host ""
 #ターゲット・データストアの定義
 $TargetDatastore = Read-Host "Which datastore would you like to place the VM on?"
 
+# 環境の選択
+Write-Host "You wanna deploy on sotani.local?" -ForegroundColor green
+$typename = "System.Management.Automation.Host.ChoiceDescription"
+$yes = new-object $typename("&Yes","実行する")
+$no  = new-object $typename("&No","実行しない")
+
+#選択肢コレクションの作成
+$assembly= $yes.getType().AssemblyQualifiedName
+$choice = new-object "System.Collections.ObjectModel.Collection``1[[$assembly]]"
+$choice.add($yes)
+$choice.add($no)
+
+#選択プロンプトの表示
+$answer = $host.ui.PromptForChoice("<実行確認>","実行しますか？",$choice,0)
+
 #　VMの作成
 Write-Host "Creating a Virtual Machine" -ForegroundColor green
-New-VM -Name "$VMName" -ResourcePool $TargetRP  -Datastore $TargetDatastore -Version v8 -NumCPU 4 -MemoryGB 8 -DiskGB 8 -DiskStorageFormat Thin -NetworkName "VM Network" -CD  -GuestID vmkernel5Guest
-#New-VM -Name "$VMName" -ResourcePool $TargetRP  -Datastore $TargetDatastore -Version v8 -NumCPU 4 -MemoryGB 8 -DiskGB 8 -DiskStorageFormat Thin -NetworkName "PG-LAB-MGMT" -CD  -GuestID vmkernel5Guest
+if($answer -eq 0){
+	New-VM -Name "$VMName" -ResourcePool $TargetRP  -Datastore $TargetDatastore -Version v8 -NumCPU 4 -MemoryGB 8 -DiskGB 8 -DiskStorageFormat Thin -NetworkName "VM Network" -CD  -GuestID vmkernel5Guest
+}else{
+	New-VM -Name "$VMName" -ResourcePool $TargetRP  -Datastore $TargetDatastore -Version v8 -NumCPU 4 -MemoryGB 8 -DiskGB 8 -DiskStorageFormat Thin -NetworkName "PG-LAB-MGMT" -CD  -GuestID vmkernel5Guest
+}
 
 # NICの追加
 Write-Host "Adding NICs to the Virtual Machine" -ForegroundColor green
-Get-VM $VMName | New-NetworkAdapter  -NetworkName "PG-vMotion"  -StartConnected
-Get-VM $VMName | New-NetworkAdapter  -NetworkName "PG-Storage"  -StartConnected
-Get-VM $VMName | New-NetworkAdapter  -NetworkName "PG-Tenant"  -StartConnected
-Get-VM $VMName | New-NetworkAdapter  -NetworkName "PG-Public"  -StartConnected
-#Get-VM $VMName | New-NetworkAdapter  -NetworkName "PG-LAB-vMotion"  -StartConnected
-#Get-VM $VMName | New-NetworkAdapter  -NetworkName "PG-Storage"  -StartConnected
-#Get-VM $VMName | New-NetworkAdapter  -NetworkName "PG-LAB-Tenant"  -StartConnected
-#Get-VM $VMName | New-NetworkAdapter  -NetworkName "PG-LAB-Public"  -StartConnected
-
+if($answer -eq 0){
+	Get-VM $VMName | New-NetworkAdapter  -NetworkName "PG-vMotion"  -StartConnected
+	Get-VM $VMName | New-NetworkAdapter  -NetworkName "PG-Storage"  -StartConnected
+	Get-VM $VMName | New-NetworkAdapter  -NetworkName "PG-Tenant"  -StartConnected
+	Get-VM $VMName | New-NetworkAdapter  -NetworkName "PG-Public"  -StartConnected
+}else{
+	Get-VM $VMName | New-NetworkAdapter  -NetworkName "PG-LAB-vMotion"  -StartConnected
+	Get-VM $VMName | New-NetworkAdapter  -NetworkName "PG-Storage"  -StartConnected
+	Get-VM $VMName | New-NetworkAdapter  -NetworkName "PG-LAB-Tenant"  -StartConnected
+	Get-VM $VMName | New-NetworkAdapter  -NetworkName "PG-LAB-Public"  -StartConnected
+}
 
 
 # NFSマウントしていなければマウント

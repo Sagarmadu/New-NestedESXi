@@ -7,6 +7,7 @@ $vcuser = "administrator"
 $vcpassword = "VMware1!"
 $nfshost = "192.168.5.99"
 $nfspath1 = "/mnt/DroboFS/Shares/NFS"
+$clustername = "CLUSTER"
 
 #ISOメディアパス
 #$ISOPath = "[NFS-Remote1] ISO/ESXi/5.1.0U2/VMware-VMvisor-Installer-5.1.0.update02-1483097.x86_64.iso"

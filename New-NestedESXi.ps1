@@ -16,7 +16,7 @@ $nfspath1 = "/mnt/DroboFS/Shares/NFS"
 #$ISOPath = "[NFS-Remote1] ISO/ESXi/5.5.0U2/VMware-VMvisor-Installer-5.5.0.update02-2068190.x86_64.iso"
 #$ISOPath = "[NFS-Remote1] ISO/ESXi/5.5.0U2/CUSTOM-VMware-VMvisor-Installer-5.5.0.update02-2068190.x86_64.iso"
 #$ISOPath = "[NFS-Remote1] ISO/ESXi/5.1.0U3/VMware-VMvisor-Installer-5.1.0.update03-2323236.x86_64.iso"
-$ISOPath = "[NFS-Remote1] ISO/ESXi/6.0.0/CUSTOM-VMware-VMvisor-Installer-6.0.0-2494585.x86_64.iso
+$ISOPath = [NFS-Remote1] ISO/ESXi/6.0.0/CUSTOM-VMware-VMvisor-Installer-6.0.0-2494585.x86_64.iso
 
 # vCenterへの接続
 Write-Host "Connecting to vCenter Server" -ForegroundColor green

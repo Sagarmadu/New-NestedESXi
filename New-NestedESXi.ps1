@@ -63,19 +63,23 @@ $answer = $host.ui.PromptForChoice("<実行確認>","実行しますか？",$cho
 #　VMの作成
 Write-Host "Creating a Virtual Machine" -ForegroundColor green
 if($answer -eq 0){
+# sotani.local
 	New-VM -Name "$VMName" -ResourcePool $TargetRP  -Datastore $TargetDatastore -Version v8 -NumCPU 4 -MemoryGB 8 -DiskGB 8 -DiskStorageFormat Thin -NetworkName "VM Network" -CD  -GuestID vmkernel5Guest
 }else{
+# lab.local
 	New-VM -Name "$VMName" -ResourcePool $TargetRP  -Datastore $TargetDatastore -Version v8 -NumCPU 4 -MemoryGB 8 -DiskGB 8 -DiskStorageFormat Thin -NetworkName "PG-LAB-MGMT" -CD  -GuestID vmkernel5Guest
 }
 
 # NICの追加
 Write-Host "Adding NICs to the Virtual Machine" -ForegroundColor green
 if($answer -eq 0){
+# sotani.local
 	Get-VM $VMName | New-NetworkAdapter  -NetworkName "PG-vMotion"  -StartConnected
 	Get-VM $VMName | New-NetworkAdapter  -NetworkName "PG-Storage"  -StartConnected
 	Get-VM $VMName | New-NetworkAdapter  -NetworkName "PG-Tenant"  -StartConnected
 	Get-VM $VMName | New-NetworkAdapter  -NetworkName "PG-Public"  -StartConnected
 }else{
+# lab.local
 	Get-VM $VMName | New-NetworkAdapter  -NetworkName "PG-LAB-vMotion"  -StartConnected
 	Get-VM $VMName | New-NetworkAdapter  -NetworkName "PG-Storage"  -StartConnected
 	Get-VM $VMName | New-NetworkAdapter  -NetworkName "PG-LAB-Tenant"  -StartConnected
@@ -120,8 +124,18 @@ $vmValue = (get-vm $VMName | get-view)
 
 
 # kickstart　hostname.cfgの作成
-#Get-NetworkAdapter -vm $VMName |?{$_.NetworkName -eq "PG-LAB-MGMT"}
-
+Write-Host "Looking for MAC address for hostname.cfg" -ForegroundColor green
+if($answer -eq 0){
+# sotani.local
+$firtmac = foreach ($nic in Get-NetworkAdapter -vm $VMName |?{$_.NetworkName -eq "VM Network"}) {
+    $nic.MacAddress　+ "`t" + $VMName | Out-File -Append -FilePath .\hostname.cfg -Encoding UTF8
+}else{
+# lab.local
+$firtmac = foreach ($nic in Get-NetworkAdapter -vm $VMName |?{$_.NetworkName -eq "PG-LAB-MGMT"}) {
+    $nic.MacAddress　+ "`t" + $VMName | Out-File -Append -FilePath .\hostname.cfg -Encoding UTF8
+  }
+ }
+  
 # kickstart ip.cfg の作成
 
 
